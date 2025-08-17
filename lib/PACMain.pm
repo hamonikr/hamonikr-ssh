@@ -3009,6 +3009,21 @@ sub _treeConnections_menu {
 
     push(@tree_menu_items, { separator => 1 });
 
+    # Open with external application (for SFTP and SSH connections)
+    if ((scalar(@sel) == 1) && !($$self{_CFG}{'environments'}{$sel[0]}{'_is_group'} || $sel[0] eq '__PAC__ROOT__') && 
+        ($$self{_CFG}{'environments'}{$sel[0]}{'method'} eq 'SFTP' || $$self{_CFG}{'environments'}{$sel[0]}{'method'} =~ /sftp/i ||
+         $$self{_CFG}{'environments'}{$sel[0]}{'method'} eq 'SSH' || $$self{_CFG}{'environments'}{$sel[0]}{'method'} =~ /ssh/i)) {
+        push(@tree_menu_items, {
+            label => __t('Open with FileZilla'),
+            stockicon => 'gtk-open',
+            tooltip => __t("Open this connection with FileZilla (SFTP)"),
+            sensitive => 1,
+            code => sub {
+                $self->_openWithFileZilla($sel[0]);
+            }
+        });
+    }
+
     # Send Wake On LAN magic packet
     push(@tree_menu_items, {
         label => __t('Wake On LAN...') . ($$self{_CFG}{'environments'}{$sel[0]}{'use proxy'} || $$self{_CFG}{'defaults'}{'use proxy'} ? __t("(can't, PROXY configured!!)") : ''),
@@ -5065,6 +5080,116 @@ sub _doFocusPage {
         # When found, do not process further
         last;
     }
+}
+
+sub _openWithFileZilla {
+    my $self = shift;
+    my $uuid = shift;
+
+    return 0 unless defined $uuid;
+
+    my $cfg = $$self{_CFG}{'environments'}{$uuid};
+    return 0 unless defined $cfg;
+
+    # Check if this is an SFTP or SSH connection
+    unless ($cfg->{'method'} eq 'SFTP' || $cfg->{'method'} =~ /sftp/i || 
+            $cfg->{'method'} eq 'SSH' || $cfg->{'method'} =~ /ssh/i) {
+        _wMessage($$self{_GUI}{main}, "This function is only available for SFTP and SSH connections");
+        return 0;
+    }
+
+    # Extract connection information
+    my $host = $cfg->{'ip'} || '';
+    my $port = $cfg->{'port'} || 22;
+    my $user = $cfg->{'user'} || '';
+    my $pass = $cfg->{'pass'} || '';
+    my $auth_type = $cfg->{'auth type'} || '';
+    my $pubkey = $cfg->{'public key'} || '';
+    my $passphrase_user = $cfg->{'passphrase user'} || '';
+    my $passphrase = $cfg->{'passphrase'} || '';
+    my $connection_method = $cfg->{'method'} || '';
+    
+    # For SSH connections using public key authentication, use the passphrase user and passphrase
+    if (($connection_method eq 'SSH' || $connection_method =~ /ssh/i) && $auth_type eq 'publickey') {
+        $user = $passphrase_user if $passphrase_user;
+        $pass = $passphrase if $passphrase;
+    }
+
+    unless ($host) {
+        _wMessage($$self{_GUI}{main}, "Host information is missing for this connection");
+        return 0;
+    }
+
+    # Build FileZilla command line
+    my $filezilla_cmd = "filezilla";
+    
+    # Check if FileZilla is available
+    my $filezilla_check = `which filezilla 2>/dev/null`;
+    chomp $filezilla_check;
+    
+    unless ($filezilla_check) {
+        _wMessage($$self{_GUI}{main}, "FileZilla is not installed or not found in PATH.\nPlease install FileZilla to use this feature.");
+        return 0;
+    }
+
+    # Build FileZilla SFTP URL
+    # For better compatibility, we'll use a simpler approach without password in URL
+    # FileZilla will prompt for password if needed
+    
+    my $sftp_url = "sftp://";
+    
+    # Add user if available
+    if ($user) {
+        $sftp_url .= $user . '@';
+    }
+    
+    # Add host
+    $sftp_url .= $host;
+    
+    # Add port if not default
+    if ($port && $port != 22) {
+        $sftp_url .= ":$port";
+    }
+    
+    # Build the launch command - don't include password in URL for security and compatibility
+    my $launch_cmd = "$ENV{'ASBRU_ENV_FOR_EXTERNAL'} $filezilla_cmd '$sftp_url' &";
+    
+    # Show confirmation dialog
+    my $auth_info = "";
+    if ($auth_type eq 'publickey' && $pubkey) {
+        $auth_info = "\nAuthentication: Public Key ($pubkey)";
+    } elsif ($auth_type eq 'publickey') {
+        $auth_info = "\nAuthentication: Public Key";
+    } elsif ($pass) {
+        $auth_info = "\nAuthentication: Password";
+    } else {
+        $auth_info = "\nAuthentication: Manual";
+    }
+    
+    my $method_info = ($connection_method eq 'SSH' || $connection_method =~ /ssh/i) ? 
+                      "SSH → SFTP" : "SFTP";
+    
+    my $password_note = "";
+    if ($pass && length($pass) > 0) {
+        $password_note = "\n\nNote: FileZilla will prompt for the password.";
+    }
+    
+    if (_wConfirm($$self{_GUI}{main}, 
+        "<b>Open with FileZilla</b>\n\n" .
+        "Connection: " . ($cfg->{'name'} || $uuid) . "\n" .
+        "Method: $method_info\n" .
+        "Host: $host" . ($port != 22 ? ":$port" : "") . "\n" .
+        "User: " . ($user || "none") . $auth_info . $password_note . "\n\n" .
+        "Do you want to open this connection in FileZilla?")) {
+        
+        system($launch_cmd);
+        
+        # Log the action
+        my $log_url = ($user ? "$user\@" : "") . $host . ($port != 22 ? ":$port" : "");
+        print "INFO: Opening $connection_method connection '$uuid' with FileZilla (SFTP): $log_url\n";
+    }
+
+    return 1;
 }
 
 # END: Define PRIVATE CLASS functions

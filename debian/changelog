@@ -1,3 +1,13 @@
+hamonikr-ssh (6.4.5) sejong; urgency=medium
+
+  * Add FileZilla integration for SFTP and SSH connections
+  * Add context menu option "Open with FileZilla" for SSH/SFTP connections
+  * Add filezilla to recommended packages in debian/control
+  * Fix uninitialized variable warning in PACKeyBindings.pm
+  * Add Korean translation for FileZilla integration
+
+ -- HamoniKR <pkg@hamonikr.org>  Mon, 09 Dec 2024 14:30:00 +0900
+
 hamonikr-ssh (6.4.4) sejong; urgency=medium
 
   * Release for HamoniKR Sejong
