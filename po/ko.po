@@ -18,6 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: ../lib/PACMain.pm:3016
+msgid "Open with FileZilla"
+msgstr "FileZilla로 열기"
+
+#: ../lib/PACMain.pm:3019
+msgid "Open this connection with FileZilla (SFTP)"
+msgstr "이 연결을 FileZilla로 열기 (SFTP)"
+
 #: ../lib/PACConfig.pm:130
 msgid "Default Global Options"
 msgstr "기본 전역 옵션"

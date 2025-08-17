@@ -14,7 +14,7 @@ Depends: perl, libvte-2.91-0, libcairo-perl, libglib-perl, libpango-perl, libsoc
 Conflicts: asbru-cm
 Replaces: asbru-cm
 Provides: asbru-cm
-Recommends: keepassxc
+Recommends: keepassxc, filezilla
 Suggests: telnet, ftp, freerdp-x11 | rdesktop, tigervnc-viewer | xtightvncviewer, mosh, cu | remote-tty, libx11-guitest-perl
 Description: SSH Connection Manager for HamoniKR
  HamoniKR SSH Client - A free and open-source connection manager
