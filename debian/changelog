@@ -1,11 +1,5 @@
 hamonikr-ssh (6.4.5) sejong; urgency=medium
 
-  * Release for HamoniKR Sejong
-
- -- HamoniKR <pkg@hamonikr.org>  Sun, 17 Aug 2025 18:25:48 +0900
-
-hamonikr-ssh (6.4.5) sejong; urgency=medium
-
   * Add FileZilla integration for SFTP and SSH connections
   * Add context menu option "Open with FileZilla" for SSH/SFTP connections
   * Add filezilla to recommended packages in debian/control
