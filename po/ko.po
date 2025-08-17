@@ -1651,6 +1651,28 @@ msgstr "개의 터미널이 있습니다"
 msgid "<b>Configuration has changed.</b>\n\nSave changes?"
 msgstr "<b>설정이 변경되었습니다.</b>\n\n변경사항을 저장하시겠습니까?"
 
+# Tray menu items
+msgid "Local Shell"
+msgstr "로컬 셸"
+
+msgid "Connect to"
+msgstr "연결"
+
+msgid "Preferences..."
+msgstr "환경설정..."
+
+msgid "Clusters..."
+msgstr "클러스터..."
+
+msgid "Show Window"
+msgstr "창 표시"
+
+msgid "About"
+msgstr "정보"
+
+msgid "Exit"
+msgstr "종료"
+
 # Context menu items
 msgid "Show Keybindings"
 msgstr "키 바인딩 표시"

@@ -34,6 +34,9 @@ use strict;
 use warnings;
 use FindBin qw ($RealBin $Bin $Script);
 
+# Internationalization
+use PACi18n qw(__i18n __ni18n);
+
 # GTK
 use Gtk3 '-init';
 
@@ -219,19 +222,19 @@ sub _trayMenu {
 
     my @m;
 
-    push(@m, {label => 'Local Shell', stockicon => 'gtk-home', code => sub {$PACMain::FUNCS{_MAIN}{_GUI}{shellBtn}->clicked();}});
+    push(@m, {label => __i18n('Local Shell'), stockicon => 'gtk-home', code => sub {$PACMain::FUNCS{_MAIN}{_GUI}{shellBtn}->clicked();}});
     push(@m, {separator => 1});
-    push(@m, {label => 'Clusters', stockicon => 'asbru-cluster-manager', submenu => _menuClusterConnections});
-    push(@m, {label => 'Favourites', stockicon => 'asbru-favourite-on', submenu => _menuFavouriteConnections});
-    push(@m, {label => 'Connect to', stockicon => 'asbru-group', submenu => _menuAvailableConnections($PACMain::FUNCS{_MAIN}{_GUI}{treeConnections}{data})});
+    push(@m, {label => __i18n('Clusters'), stockicon => 'asbru-cluster-manager', submenu => _menuClusterConnections});
+    push(@m, {label => __i18n('Favourites'), stockicon => 'asbru-favourite-on', submenu => _menuFavouriteConnections});
+    push(@m, {label => __i18n('Connect to'), stockicon => 'asbru-group', submenu => _menuAvailableConnections($PACMain::FUNCS{_MAIN}{_GUI}{treeConnections}{data})});
     push(@m, {separator => 1});
-    push(@m, {label => 'Preferences...', stockicon => 'gtk-preferences', code => sub {$$self{_MAIN}{_CONFIG}->show();}});
-    push(@m, {label => 'Clusters...', stockicon => 'gtk-justify-fill', code => sub {$$self{_MAIN}{_CLUSTER}->show();}});
-    push(@m, {label => 'PCC', stockicon => 'gtk-justify-fill', code => sub {$$self{_MAIN}{_PCC}->show();}});
-    push(@m, {label => 'Show Window', stockicon => 'gtk-home', code => sub {$$self{_MAIN}->_showConnectionsList();}});
+    push(@m, {label => __i18n('Preferences...'), stockicon => 'gtk-preferences', code => sub {$$self{_MAIN}{_CONFIG}->show();}});
+    push(@m, {label => __i18n('Clusters...'), stockicon => 'gtk-justify-fill', code => sub {$$self{_MAIN}{_CLUSTER}->show();}});
+    push(@m, {label => __i18n('PCC'), stockicon => 'gtk-justify-fill', code => sub {$$self{_MAIN}{_PCC}->show();}});
+    push(@m, {label => __i18n('Show Window'), stockicon => 'gtk-home', code => sub {$$self{_MAIN}->_showConnectionsList();}});
     push(@m, {separator => 1});
-    push(@m, {label => 'About', stockicon => 'gtk-about', code => sub {$$self{_MAIN}->_showAboutWindow();}});
-    push(@m, {label => 'Exit', stockicon => 'gtk-quit', code => sub {$$self{_MAIN}->_quitProgram();}});
+    push(@m, {label => __i18n('About'), stockicon => 'gtk-about', code => sub {$$self{_MAIN}->_showAboutWindow();}});
+    push(@m, {label => __i18n('Exit'), stockicon => 'gtk-quit', code => sub {$$self{_MAIN}->_quitProgram();}});
 
     _wPopUpMenu(\@m, $event, 'below calling widget');
 
