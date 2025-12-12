@@ -5108,7 +5108,7 @@ sub _openWithFileZilla {
     my $passphrase_user = $cfg->{'passphrase user'} || '';
     my $passphrase = $cfg->{'passphrase'} || '';
     my $connection_method = $cfg->{'method'} || '';
-    
+
     # For SSH connections using public key authentication, use the passphrase user and passphrase
     if (($connection_method eq 'SSH' || $connection_method =~ /ssh/i) && $auth_type eq 'publickey') {
         $user = $passphrase_user if $passphrase_user;
@@ -5132,15 +5132,18 @@ sub _openWithFileZilla {
         return 0;
     }
 
-    # Build FileZilla SFTP URL
-    # For better compatibility, we'll use a simpler approach without password in URL
-    # FileZilla will prompt for password if needed
+    # Build FileZilla SFTP URL with password if available
     
     my $sftp_url = "sftp://";
     
     # Add user if available
     if ($user) {
-        $sftp_url .= $user . '@';
+        $sftp_url .= $user;
+        # Add password if available (but don't include empty password)
+        if ($pass && length($pass) > 0) {
+            $sftp_url .= ":" . $pass;
+        }
+        $sftp_url .= "@";
     }
     
     # Add host
@@ -5151,7 +5154,7 @@ sub _openWithFileZilla {
         $sftp_url .= ":$port";
     }
     
-    # Build the launch command - don't include password in URL for security and compatibility
+    # Build the launch command
     my $launch_cmd = "$ENV{'ASBRU_ENV_FOR_EXTERNAL'} $filezilla_cmd '$sftp_url' &";
     
     # Show confirmation dialog
@@ -5171,6 +5174,8 @@ sub _openWithFileZilla {
     
     my $password_note = "";
     if ($pass && length($pass) > 0) {
+        $password_note = "\n\nNote: Password will be passed to FileZilla.";
+    } else {
         $password_note = "\n\nNote: FileZilla will prompt for the password.";
     }
     
@@ -5183,7 +5188,7 @@ sub _openWithFileZilla {
         "Do you want to open this connection in FileZilla?")) {
         
         system($launch_cmd);
-        
+
         # Log the action
         my $log_url = ($user ? "$user\@" : "") . $host . ($port != 22 ? ":$port" : "");
         print "INFO: Opening $connection_method connection '$uuid' with FileZilla (SFTP): $log_url\n";
