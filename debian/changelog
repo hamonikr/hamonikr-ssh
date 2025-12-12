@@ -1,3 +1,9 @@
+hamonikr-ssh (6.4.6) sejong; urgency=medium
+
+  * Release for HamoniKR Sejong
+
+ -- HamoniKR <pkg@hamonikr.org>  Fri, 12 Dec 2025 23:22:22 +0900
+
 hamonikr-ssh (6.4.5) sejong; urgency=medium
 
   * Add FileZilla integration for SFTP and SSH connections
